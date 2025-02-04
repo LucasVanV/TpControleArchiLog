@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group = 'fr.lucas_vanvooren'
+version = '1.0-SNAPSHOT'
+
+ext {
+    springBootVersion = '3.0.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    }
+}
