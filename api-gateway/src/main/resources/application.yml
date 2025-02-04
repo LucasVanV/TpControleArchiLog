@@ -10,17 +10,17 @@ spring:
         - id: book-service
           uri: lb://book-service
           predicates:
-            - Path=/book/**
+            - Path=/books/**
 
         - id: borrowing-service
           uri: lb://borrowing-service
           predicates:
-            - Path=/borrowing/**
+            - Path=/borrowings/**
 
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/user/**
+            - Path=/users/**
 
 eureka:
   client:
