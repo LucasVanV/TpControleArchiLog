@@ -8,5 +8,5 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/lucasVanV/micoconfig.git
+          uri: https://github.com/LucasVanV/TPMicroConfig.git
           default-label: main
