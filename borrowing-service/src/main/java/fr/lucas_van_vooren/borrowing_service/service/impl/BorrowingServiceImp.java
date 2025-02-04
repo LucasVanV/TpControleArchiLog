@@ -1,11 +1,11 @@
 package fr.lucas_van_vooren.borrowing_service.service.impl;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.lucas_van_vooren.borrowing_service.kafka.BorrowingKafkaProducer;
 import fr.lucas_van_vooren.borrowing_service.model.Borrowing;
 import fr.lucas_van_vooren.borrowing_service.repository.BorrowingRepository;
 import fr.lucas_van_vooren.borrowing_service.service.BorrowingService;
@@ -14,6 +14,9 @@ import fr.lucas_van_vooren.borrowing_service.service.BorrowingService;
 public class BorrowingServiceImp implements BorrowingService{
     @Autowired
     private BorrowingRepository borrowingRepository;
+
+    @Autowired
+    private BorrowingKafkaProducer borrowingKafkaProducer;
 
     public Iterable<Borrowing> getAllBorrow() {
         return borrowingRepository.findAll();
@@ -24,12 +27,22 @@ public class BorrowingServiceImp implements BorrowingService{
     }
 
     public Borrowing createBorrow(Borrowing borrow) {
+        Long userId = borrow.getUserId();
+        borrowingKafkaProducer.sendNbUserEvent(userId, numberOfUserBookBorrowed(userId));
         borrow.setBorrowDate(LocalDate.now());
         return borrowingRepository.save(borrow);
     }
 
     public void deleteBorrow(Long id) {
         borrowingRepository.deleteById(id);
+    }
+
+    public void deleteBorrowByBookId(Long id) {
+        borrowingRepository.deleteByBookId(id);
+    }
+
+    public void deleteBorrowByUserId(Long id) {
+        borrowingRepository.deleteByUserId(id);
     }
 
     public void returnBook(Long id){
@@ -41,5 +54,9 @@ public class BorrowingServiceImp implements BorrowingService{
 
     public boolean isBookAvailable(Long id){
         return  borrowingRepository.findByBookIdAndNotReturned(id).isPresent();
+    }
+
+    public int numberOfUserBookBorrowed(Long id){
+        return borrowingRepository.countUnreturnedBooksByUserId(id);
     }
 }

@@ -3,6 +3,7 @@ package fr.lucas_van_vooren.book_service.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.lucas_van_vooren.book_service.kafka.BookKafkaProducer;
 import fr.lucas_van_vooren.book_service.model.Book;
 import fr.lucas_van_vooren.book_service.repository.BookRepository;
 import fr.lucas_van_vooren.book_service.service.BookService;
@@ -11,6 +12,9 @@ import fr.lucas_van_vooren.book_service.service.BookService;
 public class BookServiceImpl implements BookService{
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private BookKafkaProducer bookKafkaProducer;
 
     public Iterable<Book> getAllBook() {
         return bookRepository.findAll();
@@ -26,6 +30,7 @@ public class BookServiceImpl implements BookService{
     }
 
     public void deleteBook(Long id) {
+        bookKafkaProducer.sendBookDeleteEvent(id);
         bookRepository.deleteById(id);
     }
 

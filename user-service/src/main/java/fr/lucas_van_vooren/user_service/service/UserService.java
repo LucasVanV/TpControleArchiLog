@@ -10,6 +10,5 @@ public interface UserService {
     public void deleteUser(Long id);
     public void updateUser(User user);
     public int getMaxNumberBorrow(MembershipType membershipType);
-    public void lockUser(Long id);
-    public void unLockUser(Long id);
+    public void addBorrow(Long id, int nbOfBook);
 }

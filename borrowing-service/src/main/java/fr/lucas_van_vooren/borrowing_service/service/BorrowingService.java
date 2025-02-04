@@ -9,4 +9,6 @@ public interface BorrowingService {
     public void deleteBorrow(Long id);
     public void returnBook(Long id);
     public boolean isBookAvailable(Long id);
+    public void deleteBorrowByBookId(Long id);
+    public void deleteBorrowByUserId(Long id);
 }

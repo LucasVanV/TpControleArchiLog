@@ -3,6 +3,7 @@ package fr.lucas_van_vooren.user_service.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.lucas_van_vooren.user_service.kafka.UserKafkaProducer;
 import fr.lucas_van_vooren.user_service.model.MembershipType;
 import fr.lucas_van_vooren.user_service.model.User;
 import fr.lucas_van_vooren.user_service.repository.UserRepository;
@@ -12,6 +13,9 @@ import fr.lucas_van_vooren.user_service.service.UserService;
 public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserKafkaProducer userKafkaProducer;
 
     public Iterable<User> getAllUser() {
         return userRepository.findAll();
@@ -27,6 +31,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public void deleteUser(Long id) {
+        userKafkaProducer.sendUserDeleteEvent(id);
         userRepository.deleteById(id);
     }
 
@@ -46,15 +51,12 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    public void lockUser(Long id){
+    public void addBorrow(Long id, int nbOfBook){
         User user = getUserById(id);
-        user.setLocked(true);
-        userRepository.save(user);
-    }
-
-    public void unLockUser(Long id){
-        User user = getUserById(id);
-        user.setLocked(false);
-        userRepository.save(user);
+        if(nbOfBook == getMaxNumberBorrow(user.getMembershipType())){
+            user.setLocked(true);
+            userRepository.save(user);
+        }
+        
     }
 }
